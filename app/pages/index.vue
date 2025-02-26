@@ -6,8 +6,7 @@ definePageMeta({
 
 <template>
   <div class="page-index">
-    <TheLogos />
-    <TheExamples />
+   
   </div>
 </template>
 
