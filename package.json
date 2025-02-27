@@ -8,7 +8,7 @@
   "author": "Element Plus Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/element-plus/element-plus-nuxt-starter"
+    "url": "https://github.com/eastgold15/buy.git"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",

@@ -19,13 +19,13 @@ export default defineNuxtConfig({
         },
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
-    }
+    },
   },
 
   // css
   css: [
     '@unocss/reset/tailwind.css',
-    '~/assets/scss/index.scss'
+    '~/assets/scss/index.scss',
   ],
 
   // vueuse
@@ -89,13 +89,13 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        name: 'English'
+        name: 'English',
       },
       {
         code: 'zh',
         iso: 'zh-CN',
-        name: '中文'
-      }
+        name: '中文',
+      },
     ],
 
   },
@@ -104,7 +104,7 @@ export default defineNuxtConfig({
     apiSecret: '', // 可以由 NUXT_API_SECRET 环境变量覆盖
     public: {
       // 可以由 NUXT_BASEURL_DEV 环境变量覆盖
-      apiBase: process.env.NODE_ENV === "development" ? process.env.NUXT_BASEURL_DEV : process.env.NUXT_BASEURL_PROD,
+      apiBase: process.env.NODE_ENV === 'development' ? process.env.NUXT_BASEURL_DEV : process.env.NUXT_BASEURL_PROD,
       apiBase_mock: process.env.NUXT_BASEURL_MOCK,
 
       // # 开发环境读取配置文件路径
@@ -125,9 +125,9 @@ export default defineNuxtConfig({
     strict: true,
     tsConfig: {
       compilerOptions: {
-        jsx: "preserve"
-      }
-    }
+        jsx: 'preserve',
+      },
+    },
   },
   srcDir: 'app/',
 })
