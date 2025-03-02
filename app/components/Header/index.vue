@@ -1,11 +1,5 @@
 <script lang="ts">
 import { HeaderNavItem } from '#build/components'
-
-const navitems = ref([
-  { icon: 'i-ep:search', text: 'NEW ARRIVAL' },
-  { icon: 'i-ep:search', text: 'OTHING' },
-  { icon: 'i-ep:search', text: 'EYOND TRAVEL' },
-])
 </script>
 
 <template>
@@ -28,12 +22,7 @@ const navitems = ref([
       </nav>
     </div>
 
-    <div class="nav">
-      <HeaderNavItem />
-      <span v-for="(item, index) in navitems" :key="index">
-        <HeaderNavItem :icon="item.icon" :text="item.text" />
-      </span>
-    </div>
+    <div class="nav" />
   </div>
 </template>
 

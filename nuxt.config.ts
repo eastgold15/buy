@@ -104,10 +104,13 @@ export default defineNuxtConfig({
     apiSecret: '', // 可以由 NUXT_API_SECRET 环境变量覆盖
     public: {
       // 可以由 NUXT_BASEURL_DEV 环境变量覆盖
+      // eslint-disable-next-line node/prefer-global/process
       apiBase: process.env.NODE_ENV === 'development' ? process.env.NUXT_BASEURL_DEV : process.env.NUXT_BASEURL_PROD,
+      // eslint-disable-next-line node/prefer-global/process
       apiBase_mock: process.env.NUXT_BASEURL_MOCK,
 
       // # 开发环境读取配置文件路径
+      // eslint-disable-next-line node/prefer-global/process
       VITE_PUBLIC_PATH: process.env.VITE_PUBLIC_PATH || '/',
     },
   },
