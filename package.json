@@ -1,9 +1,9 @@
 {
   "name": "buy",
   "type": "module",
+  "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.15.0",
-  "version": "0.1.0",
   "description": "网购",
   "author": "Element Plus Team",
   "repository": {
@@ -20,12 +20,19 @@
     "start": "node .output/server/index.mjs",
     "generate": "nuxi generate",
     "prepare": "nuxi prepare",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "clean": "rimraf ./node_modules "
+  },
+  "peerDependencies": {
+    "pinia": "^2.1.6"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@nuxt/kit": "^3.15.4",
     "@nuxtjs/i18n": "^9.2.1",
-    "element-plus": "^2.9.0"
+    "dayjs": "^1.11.13",
+    "element-plus": "^2.9.0",
+    "ioredis": "5.4.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.3.0",
@@ -40,13 +47,10 @@
     "consola": "^3.2.3",
     "eslint": "^9.20.1",
     "eslint-plugin-format": "^1.0.1",
-    "nuxt": "^3.14.1592",
+    "nuxt": "^3.15.4",
     "sass": "^1.82.0",
-    "typescript": "^5.6.3",
-    "vue-tsc": "^2.1.10"
-  },
-  "peerDependencies": {
-    "pinia": "^2.1.6"
+    "typescript": "^5.0.4",
+    "vue-tsc": "^2.1.6"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -56,5 +60,6 @@
         "vue"
       ]
     }
+  
   }
 }

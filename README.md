@@ -1,4 +1,4 @@
-# Element Plus with Nuxt 3 Minimal Starter
+# 其实是一个nuxt3的模板
 
 - SSR Preview: <https://element-plus-nuxt.vercel.app/>
 - SSG Preview: <https://nuxt-starter.element-plus.org/>
