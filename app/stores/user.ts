@@ -1,35 +1,56 @@
-import { acceptHMRUpdate, defineStore } from "pinia";
+import { acceptHMRUpdate, defineStore } from 'pinia'
 
-export const useUserStore = defineStore("user", () => {
-  /**
-   * Current named of the user.
-   */
-  const savedName = ref("");
-  const previousNames = ref(new Set<string>());
+export interface ProfileType {
+  id?: number
+  username: string
+  avatar?: string
+  roles: string[]
+  permissions: string[]
+}
+export const useUserStore = defineStore('user', () => {
+  const accessToken = ref('')
+  const refreshToken = ref('')
+  const userInfo = ref<ProfileType>()
+  const isLoggedIn = computed(() => !!accessToken.value)
+  function setToken(token: string) {
+    accessToken.value = token
+    localStorage.setItem('accessToken', token)
+  }
+  function setUserInfo(info: ProfileType) {
+    userInfo.value = info
+    localStorage.setItem('userInfo', JSON.stringify(info))
+  }
 
-  const usedNames = computed(() => Array.from(previousNames.value));
-  const otherNames = computed(() =>
-    usedNames.value.filter((name) => name !== savedName.value)
-  );
-
-  /**
-   * Changes the current name of the user and saves the one that was used
-   * before.
-   *
-   * @param name - new name to set
-   */
-  function setNewName(name: string) {
-    if (savedName.value) previousNames.value.add(savedName.value);
-
-    savedName.value = name;
+  function init() {
+    // 从本地存储恢复数据
+    const savedToken = localStorage.getItem('token')
+    const savedUserInfo = localStorage.getItem('userInfo')
+    if (savedToken)
+      accessToken.value = savedToken
+    if (savedUserInfo)
+      userInfo.value = JSON.parse(savedUserInfo)
+  }
+  const loginOut = () => {
+    accessToken.value = ''
+    refreshToken.value = ''
+    userInfo.value = undefined
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('userInfo')
   }
 
   return {
-    setNewName,
-    otherNames,
-    savedName,
-  };
-});
+    accessToken,
+    refreshToken,
+    userInfo,
+    isLoggedIn,
+    init,
+    loginOut,
+    setToken,
+    setUserInfo,
+
+  }
+})
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))

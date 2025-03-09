@@ -1,98 +1,118 @@
-
-import { reject } from 'lodash-es'
 import type { SearchParameters } from 'ofetch'
+import type { PageResVO, ResVO } from './index.type'
+import { reject } from 'lodash-es'
+import Message from '~/components/message.vue'
 
-interface ApiOptions {
+// 定义业务错误
+export class BusinessError extends Error {
+  constructor(
+    public code: number,
+    message: string,
+    public data?: any,
+  ) {
+    super(message)
+  }
+}
+
+interface ApiOptions<T = any> {
   method?: 'get' | 'post' | 'put' | 'patch' | 'delete'
-  body?: RequestInit['body'] | Record<string, any>
+  body?: T
   params?: SearchParameters
   query?: SearchParameters
-  headers?: any[],
+  headers?: any[]
   mock?: boolean
 }
 
-export const useApi = (url: string, options: ApiOptions) => {
-
+export function useApi<T = any>(url: string, options: ApiOptions) {
   const runtimeConfig = useRuntimeConfig()
   const nuxtapp = useNuxtApp()
-  let baseUrl = runtimeConfig.public.apiBase
-  if (options.mock) {
-    baseUrl = runtimeConfig.public.apiBase_mock
-  }
-  return useFetch(url, {
+  const baseUrl = options.mock ? runtimeConfig.public.apiBase_mock : runtimeConfig.public.apiBase
+  return useFetch<ResVO<T>>(url, {
     baseURL: baseUrl,
     onRequest({ options }) {
-      console.log("请求配置", options)
+      console.log('请求配置', options)
       let token = ''
       if (import.meta.client) {
-        token = localStorage.getItem('token') || ''
+        token = localStorage.getItem('accessToken') || ''
       }
 
       options.headers = {
-        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : '',
+
         ...options.headers,
       } as unknown as Headers
-
     },
     onResponse({ response }) {
-      console.log("======= response =======\n", response);
+      console.log('======= response =======\n', response)
+      const data = response._data as ResVO<T>
       if (response.status >= 200 && response.status < 300) {
-        if (response._data.code != 200) {
-          if (import.meta.client) {
-            ElMessage.error(response._data.code + "" + response._data.message)
-          }
-          nuxtapp.runWithContext(() => {
-            navigateTo({
-              path: "/error",
-              query: {
-                code: response._data.code,
-                message: response._data.message
+        if (data.code != 200) {
+          // 特定错误码处理
+          switch (data.code) {
+            case 401:
+              const userStore = useUserStore()
+              userStore.loginOut()
+              if (import.meta.client) {
+                ElMessage.error('登录已过期')
               }
-            })
-          })
+              return nuxtapp.runWithContext(() => {
+                navigateTo('/auth/login')
+              })
+            case 403:
+              return nuxtapp.runWithContext(() => {
+                navigateTo({
+                  path: '/error',
+                  query: {
+                    code: response._data.code,
+                    message: response._data.message,
+                  },
+                })
+              })
+            default:
+              throw new BusinessError(data.code, data.message, data.data)
+          }
         }
       }
-
-
+      return data
     },
-    onResponseError({ }) {
-
-    },
-    ...options
-  })
-
-
-
-}
-export const GetApi = (url: string, options?: ApiOptions) => {
-  return new Promise((resolve, reject) => {
-    useApi(url, {
-      method: 'get',
-      ...options
-    }).then(
-      (res) => {
-        console.log("get promist", res)
-
-        resolve(res.data.value)
+    onResponseError({ error }) {
+      if (import.meta.client) {
+        if (error.message.includes('Network Error')) {
+          ElMessage.error('网络连接错误')
+        }
+        else if (error.message.includes('timeout')) {
+          ElMessage.error('请求超时')
+        }
+        else {
+          ElMessage.error('服务器错误')
+          Message.error(error.message)
+        }
       }
-    ).catch((err) => {
-      reject(err)
-    })
-
+      return Promise.reject(error)
+    },
+    ...options,
   })
 }
-export const PostApi = (url: string, options: ApiOptions) => {
-  return new Promise((resolve, reject) => {
-    useApi(url, {
-      method: 'post',
-      ...options
-    }).then(
-      (res) => {
-        console.log("get promist", res)
-        resolve(res.data.value)
-      }
-    ).catch((err) => {
-      reject(err)
-    })
-  })
+export function GetApi<T = any>(url: string, options?: ApiOptions<T>) {
+  return useApi<T>(url, {
+    method: 'get',
+    ...options,
+  }).then(({ data }) => data.value)
+}
+
+// 使用 Promise 链式调用的 POST 请求
+export function PostApi<T = any>(url: string, options: ApiOptions<T>) {
+  return useApi<T>(url, {
+    method: 'post',
+    ...options,
+  }).then(({ data }) => data.value)
+}
+
+// 分页数据请求
+export function GetPageApi<T = any>(url: string, options?: ApiOptions<T>) {
+  return useApi<PageResVO<T>>(url, {
+    method: 'get',
+    ...options,
+  }).then(({ data }) => data.value)
 }
